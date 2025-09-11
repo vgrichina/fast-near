@@ -9,11 +9,18 @@ const debug = require('debug')('submit-transaction');
 const NODE_URL = process.env.FAST_NEAR_NODE_URL || 'https://rpc.mainnet.near.org';
 
 async function sendJsonRpc(method, params) {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    const authToken = process.env.FAST_NEAR_AUTH_TOKEN;
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
     const res  = await fetch(`${NODE_URL}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify({
             jsonrpc: '2.0',
             id: 'fast-near',
@@ -47,11 +54,18 @@ const txCache = new LRU({ max: 10000, maxAge: 1000 * 60 * 60 });
 async function submitTransaction(transactionData) {
     if (!blockStream) {
         blockStream = true; // NOTE: Prevent reentrancy
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        
+        const authToken = process.env.FAST_NEAR_AUTH_TOKEN;
+        if (authToken) {
+            headers['Authorization'] = `Bearer ${authToken}`;
+        }
+        
         const startBlockHeight = (await (await fetch(`${NODE_URL}/status`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers
         })).json()).sync_info.latest_block_height;
         debug('startBlockHeight:', startBlockHeight);
 

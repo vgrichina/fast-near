@@ -29,11 +29,18 @@ const proxyJson = async (ctx, { archival = false } = {}) => {
     debug('proxyJson', ctx.request.method, ctx.request.path, nodeUrl, rawBody.toString('utf8'));
 
     ctx.type = 'json';
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    const authToken = process.env.FAST_NEAR_AUTH_TOKEN;
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
     const response = await fetch(`${nodeUrl}${ctx.request.path}`, {
         method: ctx.request.method,
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers,
         body: ctx.request.method != 'GET' ? rawBody : undefined
     });
 

@@ -1,9 +1,16 @@
 const NEAR_PROVIDER_URL = 'https://archival-rpc.mainnet.near.org';
 
 async function getEpochValidators(blockHeight) {
+    const headers = { 'Content-Type': 'application/json' };
+    
+    const authToken = process.env.FAST_NEAR_AUTH_TOKEN;
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    
     const requestOptions = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
             "jsonrpc": "2.0",
             "id": "dontcare",
