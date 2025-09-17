@@ -5,6 +5,7 @@ const { RedisStorage } = require('./redis');
 const { LMDBStorage } = require('./lmdb-embedded');
 const { LakeStorage } = require('./lake');
 const { CachedStorage } = require('./cached');
+const { ShardedStorage } = require('./sharded');
 
 const storageType = process.env.FAST_NEAR_STORAGE_TYPE || 'redis';
 
@@ -15,7 +16,8 @@ const debugStorage = new DebugStorage(createStorage(storageType));
 function createStorage(storageType) {
     switch (storageType) {
         case 'lmdb':
-            return new LMDBStorage();
+            // return new LMDBStorage({ path: `./lmdb-data` });
+            return new ShardedStorage([...Array(1)].map((_, i) => new LMDBStorage({ path: `./lmdb-data/${i}` })));
         case 'redis':
             return new RedisStorage();
         case 'lake':

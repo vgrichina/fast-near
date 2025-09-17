@@ -163,4 +163,4 @@ async function fileExists(file) {
     }
 }
 
-module.exports = { LakeStorage };
+module.exports = { LakeStorage, parseCompKey };

@@ -71,9 +71,9 @@ function truncatedKey(compKey) {
 }
 
 class LMDBStorage {
-    constructor() {
+    constructor({ path = LMDB_PATH }) {
         this.db = open({
-            path: LMDB_PATH,
+            path,
             keyEncoder,
             noSync: true, // NOTE: YOLO, as all data is recoverable from the blockchain
             // compression: true, // TODO: Check if this is worth it
